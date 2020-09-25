@@ -17,11 +17,26 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     audioplaythread.cpp \
-    audiosendthread.cpp
+    audiosendthread.cpp \
+    codec.cpp
 
 HEADERS  += mainwindow.h \
     audioplaythread.h \
     audiosendthread.h \
-    config.h
+    config.h \
+    codec.h \
+    codec2.h
 
 FORMS    += mainwindow.ui
+
+unix:!macx: LIBS += -L$$PWD/./ -lcodec2
+
+INCLUDEPATH += $$PWD/.
+DEPENDPATH += $$PWD/.
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/./libcodec2.a
+
+unix:!macx: LIBS += -L$$PWD/./ -lcodec2
+
+INCLUDEPATH += $$PWD/.
+DEPENDPATH += $$PWD/.
