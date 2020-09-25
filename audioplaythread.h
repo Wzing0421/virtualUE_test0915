@@ -15,6 +15,8 @@
 #include <QDebug>
 
 #include "config.h"
+#include "codec.h"
+
 class AudioPlayThread : public QThread
 {
     Q_OBJECT
@@ -57,12 +59,16 @@ private:
     //for Audio
     QUdpSocket *udpsocket;
 
+    //解码器
+    Codec2DeCoder *codec2DeCoder;
+
     struct video{
         int lens;
         char data[960];
     };
 
     char au_data[960];
+    char sc2_2[12];//sc2_2的头
 
 private slots:
     void readyReadSlot();

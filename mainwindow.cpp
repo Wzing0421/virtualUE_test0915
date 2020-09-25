@@ -1227,10 +1227,17 @@ void MainWindow::on_connect_clicked()//UE被叫的时候点击接听按钮
     qDebug()<<"UE被叫接听，发送call connect，长度为 "<<num<<" 字节";
 }
 
+/**
+ * @brief MainWindow::on_pushButton_clicked
+ *
+ * test button for sending audio:
+ * Input: 960Bytes PCM
+ * Output: 18Bytes compressed Codec2
+ */
 void MainWindow::on_pushButton_clicked()
 {
-    //aud.start();
-    //audsend.mystart();
+    aud.start();
+    audsend.mystart();
 
 }
 
@@ -1241,6 +1248,8 @@ void MainWindow::on_pushButton_2_clicked()
     int num=sendSocket->writeDatagram((char*)sipRegister,len,Ancaddr,5060);//num返回成功发送的字节数量
     qDebug()<<"UE sends sip register, len: "<<num;
     qDebug()<<"UE sends sip register: "<<sipRegister;*/
+    aud.stop();
+    audsend.mystop();
 
 }
 

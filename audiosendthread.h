@@ -21,6 +21,7 @@
 #include <QMutexLocker>
 
 #include "config.h"
+#include "codec.h"
 
 using namespace std;
 
@@ -48,6 +49,8 @@ public:
     int m_CurrentPlayIndex = 0; //每次攒够960就发一包，这个用于记录当前缓冲区还剩多少字节
     QByteArray m_PCMDataBuffer;
 
+    Codec2EnCoder *codec2EnCoder;
+
     struct video{
         int lens;
         char data[960];
@@ -61,10 +64,13 @@ public:
     void mystop();
     void init_sc2_2();//初始化sc2_2的头
 
+    void sendAudio(char *outputData);
+
+
 public slots:
     void onReadyRead();
 
-    void readyReadSlot();//udpsocket接收到压缩的数据调用的回调函数，用于加上头并发送到媒体网关
+    //void readyReadSlot();//已经废弃： udpsocket接收到压缩的数据调用的回调函数，用于加上头并发送到媒体网关
 
 };
 

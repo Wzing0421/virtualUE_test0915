@@ -9,6 +9,13 @@ AudioPlayThread::AudioPlayThread(QObject *parent)
     //这个端口用于绑定被叫输出到输出音频设备的端口
     udpsocket->bind(QHostAddress::Any,local_audio_port);
     //connect(udpsocket,SIGNAL(readyRead()),this,SLOT(readyReadSlot()));//收到网络数据报就开始往outputDevice写入，进行播放
+
+    /*
+      初始化解码器
+    */
+    codec2DeCoder = new Codec2DeCoder();
+    codec2DeCoder->Init();
+
 }
 
 AudioPlayThread::~AudioPlayThread()
@@ -16,6 +23,7 @@ AudioPlayThread::~AudioPlayThread()
     delete udpsocket;
     delete m_OutPut;
     delete m_AudioIo;
+    delete codec2DeCoder;
 
 }
 
@@ -106,25 +114,21 @@ void AudioPlayThread::readyReadSlot(){
             QHostAddress senderip;
             quint16 senderport;
 
-            /*
-            //注意这里把头的长度从2改成12了
-            char recvbuf[FRAME_LEN_60ms+12];
+            //每次接收到的数据应该是12字节的sc2的头 + 18字节的数据
+            int len = sizeof(sc2_2) + FRANE_COMPRESS_60ms;
+            char recvbuf[len];
             memset(recvbuf,0,sizeof(recvbuf));
-            int num = udpsocket->readDatagram(recvbuf,FRAME_LEN_60ms+12,&senderip,&senderport);
-            qDebug()<<num;
-            //outputDevice->write(vp.data,vp.lens);
-            addAudioBuffer(recvbuf+12, FRAME_LEN_60ms);
-            */
+            udpsocket->readDatagram(recvbuf, len, &senderip, &senderport);
 
-            //注意这里把头的长度从2改成12了
-            char recvbuf[FRAME_LEN_60ms];
-            memset(recvbuf,0,sizeof(recvbuf));
-            int num = udpsocket->readDatagram(recvbuf,FRAME_LEN_60ms,&senderip,&senderport);
-            //qDebug()<<num;
-            //outputDevice->write(vp.data,vp.lens);
-            //for(int i = 0; i< FRAME_LEN_60ms; i++) printf("%d ",int(recvbuf[i]));
-            //printf("\n\n");
-            addAudioBuffer(recvbuf, FRAME_LEN_60ms);
+            //对收到的数据codec2解码，从18字节解码为960字节
+            char *inputData = new char[FRANE_COMPRESS_60ms];
+            strncpy(inputData, recvbuf + sizeof(sc2_2), FRANE_COMPRESS_60ms);
+            char outputData[FRAME_LEN_60ms];
+            this->codec2DeCoder->Codec((uint8_t*)inputData, FRANE_COMPRESS_60ms, (uint8_t*)outputData, FRAME_LEN_60ms);
+
+            //加入队列
+            addAudioBuffer(outputData, FRAME_LEN_60ms);
+            delete inputData;
     }
 }
 
