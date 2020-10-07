@@ -66,7 +66,6 @@ public:
 
     void sendAudio(char *outputData);
 
-
 public slots:
     void onReadyRead();
 

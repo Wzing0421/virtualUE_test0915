@@ -61,9 +61,10 @@ MainWindow::MainWindow(QWidget *parent) :
     regUdpSocket = new QUdpSocket(this);
     sendSocket = new QUdpSocket(this);
 	if (bUE4)
-	    regRecvPort = 50004;
+        regRecvPort = 50004;
 	else
-	    regRecvPort = 50005;
+        regRecvPort = 50005;
+    qDebug() << "绑定端口为： " << regRecvPort;
     bool bindflag=  regUdpSocket->bind(QHostAddress::Any,regRecvPort);//注册消息接收端口
 
     if(!bindflag){
@@ -547,13 +548,14 @@ void MainWindow::init_regMsg(QString QIMSIstr){
         //第4字节到第8字节，共40比特，作为S-TMSI.
         //s-TMSI = MMEC(8bits) + M-TMSI(32bits)移动用户标识
         //总的来说，这是一个区分不同UE的随机数，只要不是全0就行，我把地址最高为设置成0x01
+        //注册端口50014对应的是奇数，50004对应的是偶数
         if (bUE4)
 		{
             regMsg[3] = 0x0a;
             regMsg[4] = 0x59;
             regMsg[5] = 0x18;
             regMsg[6] = 0x67;
-            regMsg[7] = 0x1c;
+            regMsg[7] = 0x1d;
 		}
         else
 		{

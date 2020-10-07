@@ -122,13 +122,15 @@ void AudioPlayThread::readyReadSlot(){
 
             //对收到的数据codec2解码，从18字节解码为960字节
             char *inputData = new char[FRANE_COMPRESS_60ms];
-            strncpy(inputData, recvbuf + sizeof(sc2_2), FRANE_COMPRESS_60ms);
+            memcpy(inputData, recvbuf + sizeof(sc2_2), FRANE_COMPRESS_60ms);
+
             char outputData[FRAME_LEN_60ms];
             this->codec2DeCoder->Codec((uint8_t*)inputData, FRANE_COMPRESS_60ms, (uint8_t*)outputData, FRAME_LEN_60ms);
 
             //加入队列
             addAudioBuffer(outputData, FRAME_LEN_60ms);
             delete inputData;
+
     }
 }
 

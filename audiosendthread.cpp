@@ -103,7 +103,6 @@ void audiosendthread::onReadyRead(){
 
         //2. 发送
         this->sendAudio(outputData);
-
         //3. 整理缓冲区
         m_PCMDataBuffer = m_PCMDataBuffer.right(m_PCMDataBuffer.size()-FRAME_LEN_60ms);
         m_CurrentPlayIndex -= FRAME_LEN_60ms;
